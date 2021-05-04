@@ -1,3 +1,13 @@
+import {
+  Button,
+  Card,
+  CardContent,
+  Container,
+  FormControl,
+  Grid,
+  Input,
+  InputLabel,
+} from "@material-ui/core";
 import { useReducer, useState } from "react";
 import Target from "./target";
 
@@ -31,6 +41,7 @@ function reducer(state: State, action) {
 export default function Home() {
   const [text, setText] = useState("");
   const [props, dispatch] = useReducer(reducer, initialState);
+  // const { target } = props; とかでいろんなpropsを返しながらpropsとして取得するreduxみたいな感じでできる。
   console.log(props.target);
   function handleChange(e) {
     setText(e.target.value);
@@ -42,16 +53,57 @@ export default function Home() {
   }
 
   return (
-    <>
-      <form onSubmit={handleSubmit}>
-        <label>
-          テキストを入れてね
-          <textarea value={text} onChange={handleChange} />
-        </label>
-        <input type="submit" value="submit" />
-      </form>
-      {/* useStateやと関数が更新されないと値が反映されないけどreducerだと更新してくれるのか知らんけどちゃんとこれでも登録したら出してくれる。 */}
-      <Target target={props.target} />
-    </>
+    <Grid
+      container
+      direction="row"
+      justify="space-evenly"
+      alignItems="center"
+      style={{ height: "100vh" }}
+    >
+      <Grid item xs={3}>
+        {/* ここはGridを使うべきかCardを使うべきかとかわかりづらいなぁーなんか色々トレースしながら作ってみて覚えるしかないかも。 */}
+        {/* 基本的にレイアウト関係とかちょっとめんどくさいところとかに使って細かいところはuseStyleとか使ってnextjsのcssmoduleみたいに動かすのかな？cssで指定するのとmaterial-uiのuseStyleって何が違うの？既存のcssを修正できるから使ってるんかな？ */}
+        <Card>
+          <Container>
+            <CardContent>
+              <Grid
+                container
+                direction="column"
+                alignItems="center"
+                justify="center"
+                spacing={3}
+              >
+                <Grid item>
+                  <FormControl>
+                    <InputLabel htmlFor="my-input">テキスト入力欄</InputLabel>
+                    <Input
+                      id="my-input"
+                      aria-describedby="my-helper-text"
+                      onChange={handleChange}
+                    />
+                  </FormControl>
+                </Grid>
+                <Grid item>
+                  <Button color="primary" onClick={handleSubmit}>
+                    表示するよー
+                  </Button>
+                </Grid>
+              </Grid>
+            </CardContent>
+          </Container>
+        </Card>
+        {/* <form onSubmit={handleSubmit}>
+          <label>
+            テキストを入れてね
+            <textarea value={text} onChange={handleChange} />
+          </label>
+          <input type="submit" value="submit" />
+        </form> */}
+      </Grid>
+      <Grid item xs={3}>
+        {/* useStateやと関数が更新されないと値が反映されないけどreducerだと更新してくれるのか知らんけどちゃんとこれでも登録したら出してくれる。 */}
+        <Target target={props.target} />
+      </Grid>
+    </Grid>
   );
 }
