@@ -8,7 +8,8 @@ import {
   Input,
   InputLabel,
 } from "@material-ui/core";
-import { useReducer, useState } from "react";
+import { useAnimation } from "framer-motion";
+import { useEffect, useReducer, useState } from "react";
 import Target from "./target";
 
 // 最初に型で値の部分に型を入れれない
@@ -31,14 +32,17 @@ function reducer(state: State, action) {
       console.log(action.text);
       state.target.push(action.text);
       return { target: state.target };
-    // case "delete":
-    //   return { target: state.target.remove(state.text) };
+    case "delete":
+      state.target.shift();
+      return { target: state.target };
     default:
       throw new Error();
   }
 }
 
 export default function Home() {
+  const controls = useAnimation();
+
   const [text, setText] = useState("");
   const [props, dispatch] = useReducer(reducer, initialState);
   // const { target } = props; とかでいろんなpropsを返しながらpropsとして取得するreduxみたいな感じでできる。
@@ -51,6 +55,18 @@ export default function Home() {
     e.preventDefault();
     dispatch({ type: "add", text: text });
   }
+
+  function handleRemoveTarget() {
+    dispatch({ type: "delete" });
+  }
+
+  useEffect(() => {
+    // ここでcontrolsを動かしてランダムに動く奴を作れば良いのでは？
+    controls.start({
+      x: [0, 100, 200, 0],
+      transition: { type: "spring", stiffness: 100 },
+    });
+  });
 
   return (
     <Grid
@@ -102,7 +118,11 @@ export default function Home() {
       </Grid>
       <Grid item xs={3}>
         {/* useStateやと関数が更新されないと値が反映されないけどreducerだと更新してくれるのか知らんけどちゃんとこれでも登録したら出してくれる。 */}
-        <Target target={props.target} />
+        <Target
+          target={props.target}
+          controls={controls}
+          onChangeHandler={handleRemoveTarget}
+        />
       </Grid>
     </Grid>
   );
